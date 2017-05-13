@@ -16,4 +16,8 @@ public class Utils {
 		byteBuffer.clear();
 		return l;
 	}
+	
+	public static int byteValueOf(int value, ByteSize size){
+		return value * size.bytes();
+	}
 }

@@ -15,31 +15,31 @@ public class Block {
 	private boolean saveToMemory;
 	private int size;
 	
-	public Block(int size){
-		this(size, true, null, null);
+	public Block(int size, int index){
+		this(size, true, null, null, index);
 	}
 	
-	public Block(int size, Path saveFolder){
-		this(size, false, saveFolder, "frag_");
+	public Block(int size, Path saveFolder, int index){
+		this(size, false, saveFolder, "frag_", index);
 	}
 	
-	public Block(int size, Path saveFolder, String fileName){
-		this(size, false, saveFolder, fileName);
+	public Block(int size, Path saveFolder, String fileName, int index){
+		this(size, false, saveFolder, fileName, index);
 	}
 	
-	private Block(int size, boolean saveToMemory, Path hdFolder, String fileName){
+	private Block(int size, boolean saveToMemory, Path hdFolder, String fileName, int index){
 		this.saveToMemory = saveToMemory;
 		this.size = size;
 		try {
 			blockID = new BigInteger(1, MessageDigest.getInstance("MD5").digest(Utils.longToBytes(System.nanoTime()))).toString(16).substring(24);
 		} catch (NoSuchAlgorithmException e) {} // Not going to happen :)
-		if(saveToMemory)
-			hdData = hdFolder.resolve(fileName + blockID);
+		if(!saveToMemory)
+			hdData = hdFolder.resolve(fileName + blockID + "-" + index);
 	}
 	
 	/**
 	 * Sets the contents of this <code>Block</code>, normally this method should only be invoked by the {@link file.frag.FileFragmenter FileFragmenter} class
-	 * @param block The contents to be written to this <code>Block</code>
+	 * @param block - The contents to be written to this <code>Block</code>
 	 * @return This instance of <code>Block</code> for chaining
 	 * @throws IOException If this <code>Block</code> is saving it's contents to a file and an exception occurs, this exception can be safely ignored if this <code>Block</code> is saving it's contents to memory
 	 */
