@@ -3,36 +3,32 @@ package file.frag;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Block {
 	private String memoryData, blockID;
 	private Path hdData;
 	private boolean saveToMemory;
-	private int size;
+	private int size, index;
 	
-	public Block(int size, int index){
-		this(size, true, null, null, index);
+	public Block(int size, int index, String id){
+		this(size, true, null, null, index, id);
 	}
 	
-	public Block(int size, Path saveFolder, int index){
-		this(size, false, saveFolder, "frag_", index);
+	public Block(int size, Path saveFolder, int index, String id){
+		this(size, false, saveFolder, "frag_", index, id);
 	}
 	
-	public Block(int size, Path saveFolder, String fileName, int index){
-		this(size, false, saveFolder, fileName, index);
+	public Block(int size, Path saveFolder, String fileName, int index, String id){
+		this(size, false, saveFolder, fileName, index, id);
 	}
 	
-	private Block(int size, boolean saveToMemory, Path hdFolder, String fileName, int index){
+	private Block(int size, boolean saveToMemory, Path hdFolder, String fileName, int index, String id){
 		this.saveToMemory = saveToMemory;
 		this.size = size;
-		try {
-			blockID = new BigInteger(1, MessageDigest.getInstance("MD5").digest(Utils.longToBytes(System.nanoTime()))).toString(16).substring(24);
-		} catch (NoSuchAlgorithmException e) {} // Not going to happen :)
+		this.blockID = id;
+		this.index = index;
 		if(!saveToMemory)
 			hdData = hdFolder.resolve(fileName + blockID + "-" + index);
 	}
@@ -79,12 +75,22 @@ public class Block {
 	}
 	
 	/**
-	 * Gets the unique ID for this <code>Block</code>
+	 * Gets the ID used by this <code>Block</code>
 	 * <p>
-	 * <b>Note:</b> This ID is added to the end of the save file name in case this <code>Block</code> is saving it's information in the HD
-	 * @return The last 8 characters of a MD5 hash of the <code>System.nanoTime()</code> invoked at this <code>Block</code> constructor
+	 * <b>Note:</b> This ID is added to the middle of the save file name in case this <code>Block</code> is saving it's information in the HD
+	 * @return The last 12 characters of a MD5 hash of the <code>File.getAbsolutePath().getBytes()</code> invoked at this <code>Block</code> instantiation
 	 */
 	public String getID(){
 		return blockID;
+	}
+	
+	/**
+	 * Gets the index of this <code>Block</code> in respect to it's original <code>File</code>
+	 * <p>
+	 * <b>Note:</b> The value of this index ranges from 0 to the number of fragments - 1
+	 * @return The index representing this <code>Block</code>
+	 */
+	public int getIndex(){
+		return index;
 	}
 }
